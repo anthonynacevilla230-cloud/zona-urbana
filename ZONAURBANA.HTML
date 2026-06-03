@@ -34,7 +34,6 @@
             background: repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(220,38,38,0.02) 12px, rgba(220,38,38,0.02) 24px);
             pointer-events: none;
         }
-        /* Modal para zoom */
         .image-modal {
             display: none;
             position: fixed;
@@ -93,7 +92,6 @@
 </head>
 <body class="text-gray-200 flex flex-col min-h-screen">
  
-    <!-- Modal para zoom con cambio de imagen -->
     <div id="imageZoomModal" class="image-modal" onclick="closeImageZoom()">
         <span class="close-zoom" onclick="closeImageZoom()">&times;</span>
         <img id="zoomImage" src="" alt="Zoom">
@@ -280,7 +278,7 @@
  
     <script>
         // ==========================================
-        // CONFIGURACIÓN
+        // CONFIGURACIÓN CORRECTA DE SUPABASE
         // ==========================================
         const SUPABASE_URL = "https://cmrsimmltraqfuhdibfw.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_BE8b_9-5IY2M7NJtIwHd9Q_Ysov15gs";
@@ -294,9 +292,8 @@
         let selectedProductForPersonalization = null;
         let isAdminAuthenticated = false;
         
-        // Variables para el zoom y cambio de imagen
         let currentZoomProductId = null;
-        let currentZoomView = 'front'; // 'front' o 'back'
+        let currentZoomView = 'front';
  
         window.addEventListener('DOMContentLoaded', async () => {
             await fetchProductsFromSupabase();
