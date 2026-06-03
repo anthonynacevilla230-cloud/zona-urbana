@@ -55,6 +55,35 @@
         .zoom-buttons button:hover { background-color: #b91c1c; transform: scale(1.05); }
         .zoom-img { cursor: pointer; transition: transform 0.2s; }
         .zoom-img:hover { transform: scale(1.02); }
+        .talla-btn.active, .st-btn.active { background-color: #dc2626 !important; color: white !important; }
+        .cart-item-img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; margin-right: 12px; }
+        .cart-item { display: flex; align-items: center; margin-bottom: 12px; padding: 10px; background-color: #1f1f22; border-radius: 8px; }
+        .cart-item-details { flex: 1; }
+        .preview-img { width: 100%; max-height: 150px; object-fit: contain; border-radius: 8px; margin-bottom: 10px; }
+        .preview-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
+        .preview-buttons button { background-color: #3f3f46; color: white; border: none; padding: 5px 12px; border-radius: 6px; font-size: 10px; cursor: pointer; transition: all 0.2s; }
+        .preview-buttons button:hover { background-color: #dc2626; }
+        .product-breakdown { font-size: 10px; color: #a1a1aa; margin-top: 4px; }
+        .product-breakdown span { color: #dc2626; font-weight: bold; }
+        .payment-methods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        .payment-method {
+            background-color: #1f1f22;
+            border-radius: 12px;
+            padding: 10px 15px;
+            text-align: center;
+            transition: all 0.2s;
+            border: 1px solid #3f3f46;
+            min-width: 100px;
+        }
+        .payment-method:hover { transform: translateY(-2px); border-color: #dc2626; }
+        .payment-method i { font-size: 28px; margin-bottom: 8px; display: block; }
+        .payment-method p { font-size: 10px; color: #a1a1aa; margin-top: 4px; font-weight: 500; }
     </style>
 </head>
 <body class="text-gray-200 flex flex-col min-h-screen">
@@ -94,8 +123,8 @@
         </div>
         <nav class="bg-red-700 text-white text-[11px] md:text-xs font-bold uppercase tracking-wider overflow-x-auto whitespace-nowrap">
             <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-center space-x-6 md:space-x-8">
-                <button onclick="filterBySubcategory('Liga Local')" class="hover:text-black transition-colors">LIGAS NACIONALES <i class="fa-solid fa-chevron-down text-[8px] ml-1"></i></button>
-                <button onclick="filterBySubcategory('Champions')" class="hover:text-black transition-colors">UEFA CHAMPIONS LEAGUE <i class="fa-solid fa-chevron-down text-[8px] ml-1"></i></button>
+                <button onclick="filterBySubcategory('Liga Local')" class="hover:text-black transition-colors">LIGA NACIONAL <i class="fa-solid fa-chevron-down text-[8px] ml-1"></i></button>
+                <button onclick="filterBySubcategory('Champions')" class="hover:text-black transition-colors">EQUIPOS INTERNACIONALES <i class="fa-solid fa-chevron-down text-[8px] ml-1"></i></button>
                 <button onclick="filterBySubcategory('Selecciones')" class="hover:text-black transition-colors">SELECCIONES NACIONALES <i class="fa-solid fa-chevron-down text-[8px] ml-1"></i></button>
                 <button onclick="filterBySubcategory('Retro')" class="hover:text-black transition-colors">EQUIPACIÓN RETRO <i class="fa-solid fa-chevron-down text-[8px] ml-1"></i></button>
                 <button onclick="scrollToCustomizer()" class="text-yellow-400"><i class="fa-solid fa-shirt mr-1"></i> PERSONALIZACIÓN</button>
@@ -106,81 +135,120 @@
     <section id="adminPanelSection" class="hidden bg-zinc-950 border-b border-red-600/30 py-6 px-4">
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between border-b border-zinc-850 pb-4 mb-6 gap-4">
-                <div>
-                    <h3 class="font-sporty text-2xl font-bold uppercase tracking-wide text-red-500 flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-lg"></i> Panel de Control Zona Urbana
-                    </h3>
-                    <p class="text-[11px] text-zinc-500">Agrega, edita y gestiona tu catálogo de camisetas sincronizado con Supabase.</p>
-                </div>
-                <div class="flex flex-wrap gap-2 w-full lg:w-auto justify-start lg:justify-end">
-                    <button onclick="showAddProductModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-4 py-2.5 rounded flex items-center gap-1.5 uppercase tracking-wider shadow-lg shadow-red-600/20">+ Añadir Camiseta</button>
-                    <button onclick="cerrarSesionAdmin()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 text-xs px-4 py-2.5 rounded">Cerrar Sesión</button>
-                </div>
+                <div><h3 class="font-sporty text-2xl font-bold uppercase tracking-wide text-red-500 flex items-center gap-2"><i class="fa-solid fa-sliders text-lg"></i> Panel de Control Zona Urbana</h3><p class="text-[11px] text-zinc-500">Agrega, edita y gestiona tu catálogo de camisetas sincronizado con Supabase.</p></div>
+                <div class="flex flex-wrap gap-2"><button onclick="showAddProductModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-4 py-2.5 rounded flex items-center gap-1.5 uppercase">+ Añadir Camiseta</button><button onclick="cerrarSesionAdmin()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 text-xs px-4 py-2.5 rounded">Cerrar Sesión</button></div>
             </div>
-            <div class="overflow-x-auto bg-zinc-900 rounded border border-zinc-850">
-                <table class="w-full text-left border-collapse text-xs">
-                    <thead><tr class="bg-zinc-950 text-zinc-400 font-bold uppercase border-b border-zinc-850 text-[10px] tracking-wider"><th class="p-3">Vista Previa</th><th class="p-3">Equipo</th><th class="p-3">Liga</th><th class="p-3">Temporada</th><th class="p-3">Precio</th><th class="p-3 text-right">Acciones</th></tr></thead>
-                    <tbody id="adminProductsTableBody"></tbody>
-                </table>
-            </div>
+            <div class="overflow-x-auto bg-zinc-900 rounded border border-zinc-850"><table class="w-full text-left border-collapse text-xs"><thead><tr class="bg-zinc-950 text-zinc-400 font-bold uppercase"><th class="p-3">Vista Previa</th><th class="p-3">Equipo</th><th class="p-3">Liga</th><th class="p-3">Temporada</th><th class="p-3">Precio</th><th class="p-3 text-right">Acciones</th><tr></thead><tbody id="adminProductsTableBody"></tbody></table></div>
         </div>
     </section>
  
-    <section class="sports-slashes border-b border-zinc-900 relative py-12 md:py-20 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col items-center text-center relative z-10">
-            <div class="w-full flex flex-col md:flex-row items-center justify-around gap-8">
-                <div class="hidden lg:block w-52 h-64 opacity-60 transform -rotate-6 transition-all duration-300 hover:rotate-0 hover:opacity-90"><div class="bg-zinc-900/90 p-5 rounded-lg border border-zinc-800 shadow-xl text-center flex flex-col items-center justify-center h-full"><i class="fa-solid fa-medal text-4xl text-red-600 mb-3"></i><p class="font-bold text-sm text-white">Calidad Premium</p><p class="text-[10px] text-zinc-500 mt-1">Telas importadas 100% poliéster</p></div></div>
-                <div class="max-w-xl"><span class="bg-red-600/20 text-red-500 text-[10px] tracking-widest uppercase font-bold px-3 py-1 rounded border border-red-600/30">Nuevos Modelos de Temporada</span><h2 class="font-sporty text-5xl md:text-7xl font-extrabold tracking-tighter italic leading-none my-4 uppercase text-white drop-shadow-md">VER NUEVAS <br><span class="text-red-600">EQUIPACIONES</span></h2><a href="#catalogo" class="bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider px-8 py-3.5 rounded inline-block shadow-lg shadow-red-600/30">Explorar Catálogo</a></div>
-                <div class="hidden lg:block w-52 h-64 opacity-60 transform rotate-6 transition-all duration-300 hover:rotate-0 hover:opacity-90"><div class="bg-zinc-900/90 p-5 rounded-lg border border-zinc-800 shadow-xl text-center flex flex-col items-center justify-center h-full"><i class="fa-solid fa-truck-fast text-4xl text-red-600 mb-3"></i><p class="font-bold text-sm text-white">Envíos Rápidos</p><p class="text-[10px] text-zinc-500 mt-1">Despachos a todo el Ecuador</p></div></div>
-            </div>
-        </div>
-    </section>
+    <section class="sports-slashes border-b border-zinc-900 relative py-12 md:py-20 overflow-hidden"><div class="max-w-7xl mx-auto px-4 flex flex-col items-center text-center relative z-10"><div class="w-full flex flex-col md:flex-row items-center justify-around gap-8"><div class="hidden lg:block w-52 h-64 opacity-60 transform -rotate-6 transition-all duration-300 hover:rotate-0 hover:opacity-90"><div class="bg-zinc-900/90 p-5 rounded-lg border border-zinc-800 shadow-xl text-center flex flex-col items-center justify-center h-full"><i class="fa-solid fa-medal text-4xl text-red-600 mb-3"></i><p class="font-bold text-sm text-white">Calidad Premium</p><p class="text-[10px] text-zinc-500 mt-1">Telas importadas 100% poliéster</p></div></div><div class="max-w-xl"><span class="bg-red-600/20 text-red-500 text-[10px] tracking-widest uppercase font-bold px-3 py-1 rounded border border-red-600/30">Nuevos Modelos de Temporada</span><h2 class="font-sporty text-5xl md:text-7xl font-extrabold tracking-tighter italic leading-none my-4 uppercase text-white drop-shadow-md">VER NUEVAS <br><span class="text-red-600">EQUIPACIONES</span></h2><a href="#catalogo" class="bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider px-8 py-3.5 rounded inline-block shadow-lg shadow-red-600/30">Explorar Catálogo</a></div><div class="hidden lg:block w-52 h-64 opacity-60 transform rotate-6 transition-all duration-300 hover:rotate-0 hover:opacity-90"><div class="bg-zinc-900/90 p-5 rounded-lg border border-zinc-800 shadow-xl text-center flex flex-col items-center justify-center h-full"><i class="fa-solid fa-truck-fast text-4xl text-red-600 mb-3"></i><p class="font-bold text-sm text-white">Envíos Rápidos</p><p class="text-[10px] text-zinc-500 mt-1">Despachos a todo el Ecuador</p></div></div></div></div></section>
  
     <main id="catalogo" class="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <aside class="lg:col-span-3 space-y-6">
                 <div class="bg-zinc-900 border border-zinc-800/80 p-5 rounded shadow-lg">
-                    <div class="mb-6"><h3 class="font-sporty text-lg font-bold text-white tracking-wide uppercase">Ligas</h3><div class="space-y-3 mt-3"><label class="flex items-center space-x-2.5 text-xs text-zinc-300 cursor-pointer"><input type="checkbox" value="Ecuador" checked onchange="renderCatalog()" class="liga-checkbox accent-red-600 w-4 h-4"><span>Ecuador</span></label><label class="flex items-center space-x-2.5 text-xs text-zinc-300 cursor-pointer"><input type="checkbox" value="Lunes" checked onchange="renderCatalog()" class="liga-checkbox accent-red-600 w-4 h-4"><span>Lunes</span></label><label class="flex items-center space-x-2.5 text-xs text-zinc-300 cursor-pointer"><input type="checkbox" value="Selecciones" checked onchange="renderCatalog()" class="liga-checkbox accent-red-600 w-4 h-4"><span>Selecciones</span></label></div></div>
+                    <div class="mb-6"><h3 class="font-sporty text-lg font-bold text-white tracking-wide uppercase">Ligas</h3>
+                        <div class="space-y-3 mt-3">
+                            <label class="flex items-center space-x-2.5 text-xs text-zinc-300 cursor-pointer"><input type="checkbox" value="Ecuador" checked onchange="renderCatalog()" class="liga-checkbox accent-red-600 w-4 h-4"><span>Ecuador</span></label>
+                            <label class="flex items-center space-x-2.5 text-xs text-zinc-300 cursor-pointer"><input type="checkbox" value="Ligas internacionales" checked onchange="renderCatalog()" class="liga-checkbox accent-red-600 w-4 h-4"><span>Ligas internacionales</span></label>
+                            <label class="flex items-center space-x-2.5 text-xs text-zinc-300 cursor-pointer"><input type="checkbox" value="Selecciones" checked onchange="renderCatalog()" class="liga-checkbox accent-red-600 w-4 h-4"><span>Selecciones</span></label>
+                        </div>
+                    </div>
                     <div class="mb-6"><h3 class="font-sporty text-lg font-bold text-white tracking-wide uppercase">Tallas</h3><div class="grid grid-cols-5 gap-1.5 mt-3"><button onclick="setGlobalTalla('S')" id="gt-S" class="talla-btn bg-zinc-800 text-zinc-300 text-xs py-2 rounded">S</button><button onclick="setGlobalTalla('M')" id="gt-M" class="talla-btn bg-zinc-800 text-zinc-300 text-xs py-2 rounded">M</button><button onclick="setGlobalTalla('L')" id="gt-L" class="talla-btn bg-zinc-800 text-zinc-300 text-xs py-2 rounded">L</button><button onclick="setGlobalTalla('XL')" id="gt-XL" class="talla-btn bg-zinc-800 text-zinc-300 text-xs py-2 rounded">XL</button><button onclick="setGlobalTalla('XXL')" id="gt-XXL" class="talla-btn bg-zinc-800 text-zinc-300 text-xs py-2 rounded">XXL</button></div></div>
                 </div>
             </aside>
-            <section class="lg:col-span-6 space-y-6">
-                <div id="dbLoader" class="flex flex-col items-center justify-center py-12 gap-2 bg-zinc-900 border border-zinc-850 rounded"><div class="animate-spin rounded-full h-6 w-6 border-2 border-t-red-600 border-zinc-800"></div><span class="text-xs text-zinc-400">Conectando a la base de datos de Zona Urbana...</span></div>
-                <div id="catalogGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden"></div>
-            </section>
+            <section class="lg:col-span-6 space-y-6"><div id="dbLoader" class="flex flex-col items-center justify-center py-12 gap-2 bg-zinc-900 border border-zinc-850 rounded"><div class="animate-spin rounded-full h-6 w-6 border-2 border-t-red-600 border-zinc-800"></div><span class="text-xs text-zinc-400">Conectando a la base de datos...</span></div><div id="catalogGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden"></div></section>
             <aside id="personalizer-anchor" class="lg:col-span-3 space-y-6">
-                <div class="bg-zinc-900 border border-zinc-800/80 rounded shadow-lg flex flex-col"><div class="bg-zinc-950 p-4 border-b border-zinc-800 flex justify-between"><span class="font-sporty font-bold text-xs uppercase">CARRITO <span class="text-zinc-500 text-[10px] font-normal">(Zona Urbana)</span></span><button onclick="clearShoppingBag()" class="text-zinc-500 hover:text-red-500 text-xs">Vaciar</button></div><div id="compactCartList" class="p-4 space-y-3 max-h-56 overflow-y-auto text-xs text-zinc-400">El carrito está vacío.</div><div class="p-4 border-t border-zinc-800 bg-zinc-950/40 space-y-3"><div class="flex justify-between text-xs"><span>Subtotal:</span><span id="compactCartTotal" class="text-red-500 font-extrabold text-base">$0.00</span></div><button onclick="sendOrderWhatsApp()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2.5 rounded uppercase tracking-wider shadow-md">Finalizar Pedido</button></div></div>
-                <div id="personalizerBox" class="bg-zinc-900 border border-zinc-800/80 p-4 rounded shadow-lg space-y-4"><div class="flex justify-between pb-2 border-b border-zinc-800"><h4 class="font-sporty text-sm font-bold uppercase text-white">Personalización</h4><i class="fa-solid fa-shirt text-xs text-red-500"></i></div><p id="activeProductLabel" class="text-xs font-bold text-amber-500 bg-amber-500/10 px-2 py-1.5 rounded border border-amber-500/20 text-center">⚠️ Selecciona una camiseta del catálogo para personalizar</p><div><span class="block text-[10px] uppercase font-bold text-zinc-400">Talla de Camiseta</span><div class="grid grid-cols-5 gap-1 mt-1" id="stampTallaSelector"><button onclick="selectStampTalla('S')" class="st-btn bg-red-600 text-white text-[10px] py-1.5 rounded">S</button><button onclick="selectStampTalla('M')" class="st-btn bg-zinc-800 text-zinc-300 text-[10px] py-1.5 rounded">M</button><button onclick="selectStampTalla('L')" class="st-btn bg-zinc-800 text-zinc-300 text-[10px] py-1.5 rounded">L</button><button onclick="selectStampTalla('XL')" class="st-btn bg-zinc-800 text-zinc-300 text-[10px] py-1.5 rounded">XL</button><button onclick="selectStampTalla('XXL')" class="st-btn bg-zinc-800 text-zinc-300 text-[10px] py-1.5 rounded">XXL</button></div></div><div class="space-y-3 pt-1"><label class="flex justify-between text-xs text-zinc-300 cursor-pointer"><span class="flex items-center gap-2"><input type="checkbox" id="enableCustomStamping" onchange="toggleStampInputs()" class="accent-red-600 w-4 h-4"><span>Añadir Nombre/Número</span></span><span class="text-red-500 font-bold text-[11px]">+ $10.00</span></label><div id="stampingFieldsSection" class="hidden space-y-2 pl-6"><input type="text" id="customSpineName" maxlength="12" placeholder="NOMBRE EN LA ESPALDA" class="w-full bg-zinc-950 border border-zinc-800 text-[10px] text-white rounded px-2.5 py-2 uppercase"><input type="number" id="customSpineNumber" min="1" max="99" placeholder="NÚMERO (1 - 99)" class="w-full bg-zinc-950 border border-zinc-800 text-[10px] text-white rounded px-2.5 py-2"></div><label class="flex justify-between text-xs text-zinc-300 cursor-pointer"><span class="flex items-center gap-2"><input type="checkbox" id="enablePatches" class="accent-red-600 w-4 h-4"><span>Parches Adicionales</span></span><span class="text-red-500 font-bold text-[11px]">+ $5.00</span></label></div><button onclick="addToBagFromPersonalizer()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2.5 rounded uppercase tracking-wider">Agregar Configuración</button></div>
-                <div class="bg-zinc-900 border border-red-600/30 p-4 rounded shadow-lg space-y-4"><div class="flex justify-between pb-2 border-b border-zinc-800"><h4 class="font-sporty text-sm font-bold uppercase text-red-500 flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> Asistente de Estilo IA</h4><span class="text-[9px] bg-red-600/20 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase">Gemini 3.5</span></div><button onclick="getLegendaryPlayerRecommendation()" class="w-full bg-gradient-to-r from-zinc-800 to-zinc-700 hover:from-red-600 hover:to-red-700 border border-zinc-700 hover:border-red-500 text-white text-[10px] py-2 rounded">✨ Sugerir Dorsal Histórico</button><div id="aiRecommendationBox" class="hidden bg-zinc-950 border border-zinc-800 rounded p-2.5"><div class="flex justify-between"><span class="text-[9px] font-bold text-red-500">Recomendación</span><button onclick="applyAIRecToStamping()" class="text-emerald-400 text-[9px]">Aplicar</button></div><p id="aiRecommendationText" class="text-[10px] text-zinc-300 italic"></p></div><div><label class="block text-[10px] uppercase font-bold text-zinc-400">¿Es un Regalo? Dedicatoria IA</label><div class="space-y-1.5 mt-1"><input type="text" id="aiGiftTo" placeholder="¿Para quién es?" class="w-full bg-zinc-950 border border-zinc-800 text-[10px] text-white rounded px-2.5 py-1.5"><input type="text" id="aiGiftTeam" placeholder="Su club favorito" class="w-full bg-zinc-950 border border-zinc-800 text-[10px] text-white rounded px-2.5 py-1.5"><button onclick="generateGiftDedication()" class="w-full bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-600/30 text-[10px] py-1.5 rounded">✨ Crear Dedicatoria de Regalo</button></div></div><div id="aiGiftBox" class="hidden bg-zinc-950 border border-zinc-800 rounded p-2.5"><div class="flex justify-between"><span class="text-[9px] font-bold text-red-500">Dedicatoria</span></div><p id="aiGiftText" class="text-[10px] text-zinc-300 italic"></p></div></div>
+                <!-- 1. PERSONALIZACIÓN -->
+                <div id="personalizerBox" class="bg-zinc-900 border border-zinc-800/80 p-4 rounded shadow-lg space-y-4">
+                    <div class="flex justify-between pb-2 border-b border-zinc-800"><h4 class="font-sporty text-sm font-bold uppercase text-white">Personalización</h4><i class="fa-solid fa-shirt text-xs text-red-500"></i></div>
+                    <p id="activeProductLabel" class="text-xs font-bold text-amber-500 bg-amber-500/10 px-2 py-1.5 rounded border border-amber-500/20 text-center">⚠️ Selecciona una camiseta del catálogo para personalizar</p>
+                    
+                    <div id="previewContainer" class="hidden">
+                        <div class="bg-zinc-950 p-3 rounded border border-zinc-700 text-center">
+                            <p class="text-[9px] text-zinc-400 mb-2">🖼️ VISTA PREVIA</p>
+                            <img id="previewImage" src="" class="preview-img" alt="Vista previa">
+                            <div class="preview-buttons">
+                                <button onclick="switchPreview('front')" id="previewFrontBtn" class="bg-red-600">👕 FRENTE</button>
+                                <button onclick="switchPreview('back')" id="previewBackBtn" class="bg-zinc-700">🔄 ESPALDA</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div><span class="block text-[10px] uppercase font-bold text-zinc-400">Talla de Camiseta</span><div class="grid grid-cols-5 gap-1 mt-1" id="stampTallaSelector"><button onclick="selectStampTalla('S')" id="st-S" class="st-btn bg-zinc-800 text-zinc-300 text-[10px] py-1.5 rounded">S</button><button onclick="selectStampTalla('M')" id="st-M" class="st-btn bg-red-600 text-white text-[10px] py-1.5 rounded">M</button><button onclick="selectStampTalla('L')" id="st-L" class="st-btn bg-zinc-800 text-zinc-300 text-[10px] py-1.5 rounded">L</button><button onclick="selectStampTalla('XL')" id="st-XL" class="st-btn bg-zinc-800 text-zinc-300 text-[10px] py-1.5 rounded">XL</button><button onclick="selectStampTalla('XXL')" id="st-XXL" class="st-btn bg-zinc-800 text-zinc-300 text-[10px] py-1.5 rounded">XXL</button></div></div>
+                    <div class="space-y-3 pt-1"><label class="flex justify-between text-xs text-zinc-300 cursor-pointer"><span class="flex items-center gap-2"><input type="checkbox" id="enableCustomStamping" onchange="toggleStampInputs()" class="accent-red-600 w-4 h-4"><span>Añadir Nombre/Número</span></span><span class="text-red-500 font-bold text-[11px]">+ $10.00</span></label><div id="stampingFieldsSection" class="hidden space-y-2 pl-6"><input type="text" id="customSpineName" maxlength="12" placeholder="NOMBRE EN LA ESPALDA" class="w-full bg-zinc-950 border border-zinc-800 text-[10px] text-white rounded px-2.5 py-2 uppercase"><input type="number" id="customSpineNumber" min="1" max="99" placeholder="NÚMERO (1 - 99)" class="w-full bg-zinc-950 border border-zinc-800 text-[10px] text-white rounded px-2.5 py-2"></div><label class="flex justify-between text-xs text-zinc-300 cursor-pointer"><span class="flex items-center gap-2"><input type="checkbox" id="enablePatches" class="accent-red-600 w-4 h-4"><span>Parches Adicionales</span></span><span class="text-red-500 font-bold text-[11px]">+ $5.00</span></label></div>
+                    <button onclick="addToBagFromPersonalizer()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2.5 rounded uppercase tracking-wider">AGREGAR AL CARRITO</button>
+                </div>
+                <!-- 2. ASISTENTE IA -->
+                <div class="bg-zinc-900 border border-red-600/30 p-4 rounded shadow-lg space-y-4">
+                    <div class="flex justify-between pb-2 border-b border-zinc-800"><h4 class="font-sporty text-sm font-bold uppercase text-red-500 flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> Asistente de Estilo IA</h4><span class="text-[9px] bg-red-600/20 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase">Gemini 3.5</span></div>
+                    <button onclick="getLegendaryPlayerRecommendation()" class="w-full bg-gradient-to-r from-zinc-800 to-zinc-700 hover:from-red-600 hover:to-red-700 border border-zinc-700 hover:border-red-500 text-white text-[10px] py-2 rounded">✨ Sugerir Dorsal Histórico</button>
+                    <div id="aiRecommendationBox" class="hidden bg-zinc-950 border border-zinc-800 rounded p-2.5"><div class="flex justify-between"><span class="text-[9px] font-bold text-red-500">Recomendación</span><button onclick="applyAIRecToStamping()" class="text-emerald-400 text-[9px]">Aplicar</button></div><p id="aiRecommendationText" class="text-[10px] text-zinc-300 italic"></p></div>
+                    <div><label class="block text-[10px] uppercase font-bold text-zinc-400">¿Es un Regalo? Dedicatoria IA</label><div class="space-y-1.5 mt-1"><input type="text" id="aiGiftTo" placeholder="¿Para quién es?" class="w-full bg-zinc-950 border border-zinc-800 text-[10px] text-white rounded px-2.5 py-1.5"><input type="text" id="aiGiftTeam" placeholder="Su club favorito" class="w-full bg-zinc-950 border border-zinc-800 text-[10px] text-white rounded px-2.5 py-1.5"><button onclick="generateGiftDedication()" class="w-full bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-600/30 text-[10px] py-1.5 rounded">✨ Crear Dedicatoria de Regalo</button></div></div>
+                    <div id="aiGiftBox" class="hidden bg-zinc-950 border border-zinc-800 rounded p-2.5"><div class="flex justify-between"><span class="text-[9px] font-bold text-red-500">Dedicatoria</span></div><p id="aiGiftText" class="text-[10px] text-zinc-300 italic"></p></div>
+                </div>
+                <!-- 3. DATOS DE FACTURA -->
+                <div class="bg-zinc-900 border border-zinc-800/80 p-4 rounded shadow-lg space-y-3">
+                    <h4 class="font-sporty text-sm font-bold uppercase text-white">Datos de Factura</h4>
+                    <input type="text" id="facturaNombre" placeholder="NOMBRE COMPLETO" class="w-full bg-zinc-950 border border-zinc-800 text-xs text-white rounded px-3 py-2 focus:outline-none focus:border-red-600">
+                    <input type="text" id="facturaCedula" placeholder="CÉDULA / RUC" class="w-full bg-zinc-950 border border-zinc-800 text-xs text-white rounded px-3 py-2 focus:outline-none focus:border-red-600">
+                    <input type="tel" id="facturaCelular" placeholder="CELULAR / WHATSAPP" class="w-full bg-zinc-950 border border-zinc-800 text-xs text-white rounded px-3 py-2 focus:outline-none focus:border-red-600">
+                    <input type="text" id="facturaDireccion" placeholder="DIRECCIÓN" class="w-full bg-zinc-950 border border-zinc-800 text-xs text-white rounded px-3 py-2 focus:outline-none focus:border-red-600">
+                    <div class="pt-2">
+                        <span class="block text-[10px] uppercase font-bold text-zinc-400 mb-2">📦 Método de Entrega</span>
+                        <label class="flex items-center gap-3 text-xs text-zinc-300 cursor-pointer mb-2"><input type="radio" name="deliveryMethod" value="envio" checked class="accent-red-600"> 🚚 Envío a domicilio <span class="text-red-500 ml-auto">+ $3.00</span></label>
+                        <label class="flex items-center gap-3 text-xs text-zinc-300 cursor-pointer"><input type="radio" name="deliveryMethod" value="retiro" class="accent-red-600"> 🏪 Retiro en tienda <span class="text-green-500 ml-auto">Gratis</span></label>
+                    </div>
+                </div>
+                <!-- 4. CARRITO CON MÉTODOS DE PAGO SIMPLIFICADOS -->
+                <div class="bg-zinc-900 border border-zinc-800/80 rounded shadow-lg flex flex-col">
+                    <div class="bg-zinc-950 p-4 border-b border-zinc-800 flex justify-between"><span class="font-sporty font-bold text-xs uppercase">CARRITO <span class="text-zinc-500 text-[10px] font-normal">(Zona Urbana)</span></span><button onclick="clearShoppingBag()" class="text-zinc-500 hover:text-red-500 text-xs">Vaciar</button></div>
+                    <div id="compactCartList" class="p-4 space-y-3 max-h-56 overflow-y-auto text-xs text-zinc-400">El carrito está vacío.</div>
+                    <div class="p-4 border-t border-zinc-800 bg-zinc-950/40 space-y-3">
+                        <div id="cartItemsImages" class="space-y-2"></div>
+                        <div class="flex justify-between text-xs"><span>Subtotal:</span><span id="compactCartTotal" class="text-red-500 font-extrabold text-base">$0.00</span></div>
+                        <div class="flex justify-between text-xs pt-1 border-t border-zinc-700"><span>📦 Envío:</span><span id="deliveryCost" class="text-white">$3.00</span></div>
+                        <div class="flex justify-between text-base font-bold pt-1"><span>TOTAL:</span><span id="totalWithDelivery" class="text-red-500 font-extrabold text-lg">$0.00</span></div>
+                        
+                        <!-- MÉTODOS DE PAGO SIMPLIFICADOS -->
+                        <div class="pt-3 border-t border-zinc-700 mt-2">
+                            <p class="text-[10px] font-bold text-zinc-400 mb-3">💳 MÉTODOS DE PAGO</p>
+                            <div class="payment-methods">
+                                <div class="payment-method"><i class="fas fa-university"></i><p>Transferencia Bancaria</p></div>
+                                <div class="payment-method"><i class="fas fa-money-bill-wave"></i><p>Efectivo</p></div>
+                                <div class="payment-method"><i class="fas fa-credit-card"></i><p>Tarjeta Débito</p></div>
+                                <div class="payment-method"><i class="fas fa-credit-card"></i><p>Tarjeta Crédito</p></div>
+                            </div>
+                            <div class="text-xs text-zinc-400 space-y-1 mt-3 p-2 bg-zinc-800/50 rounded">
+                                <p class="text-[10px]">📌 <span class="text-green-400">✅</span> Una vez confirmado tu pedido, te enviaremos los datos de cuenta para la transferencia.</p>
+                                <p class="text-[10px]">📌 <span class="text-green-400">✅</span> Pagos en efectivo y tarjeta, se realizan en el establecimiento (retiro en tienda) o contra entrega.</p>
+                            </div>
+                        </div>
+                        
+                        <button onclick="sendOrderWhatsApp()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-2.5 rounded uppercase tracking-wider shadow-md mt-3">FINALIZAR PEDIDO</button>
+                    </div>
+                </div>
             </aside>
         </div>
     </main>
  
-    <div id="adminPasswordModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden"><div class="bg-zinc-900 border border-zinc-800 rounded-lg max-w-sm w-full p-6 relative shadow-2xl"><button onclick="closeAdminPasswordModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button><div class="text-center mb-6"><div class="h-12 w-12 rounded-full bg-red-600/10 text-red-500 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-lock text-xl"></i></div><h3 class="font-sporty text-xl font-bold uppercase text-white">Acceso Panel Admin</h3></div><div class="space-y-4"><input type="password" id="adminPasswordInput" placeholder="Clave del Administrador" class="w-full bg-zinc-950 border border-zinc-800 rounded p-3 text-center text-white text-lg font-bold tracking-widest"><button onclick="verifyAdminPassword()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded uppercase text-xs">Entrar al Sistema</button><p id="adminPasswordError" class="text-red-500 text-[10px] text-center hidden">PIN Incorrecto.</p></div></div></div>
+    <div id="adminPasswordModal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 hidden"><div class="bg-zinc-900 border border-zinc-800 rounded-lg max-w-sm w-full p-6"><button onclick="closeAdminPasswordModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button><div class="text-center mb-6"><div class="h-12 w-12 rounded-full bg-red-600/10 text-red-500 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-lock text-xl"></i></div><h3 class="font-sporty text-xl font-bold uppercase text-white">Acceso Panel Admin</h3></div><div class="space-y-4"><input type="password" id="adminPasswordInput" placeholder="Clave del Administrador" class="w-full bg-zinc-950 border border-zinc-800 rounded p-3 text-center text-white text-lg font-bold tracking-widest"><button onclick="verifyAdminPassword()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded uppercase text-xs">Entrar al Sistema</button><p id="adminPasswordError" class="text-red-500 text-[10px] text-center hidden">PIN Incorrecto.</p></div></div></div>
  
-    <div id="adminProductModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden"><div class="bg-zinc-900 border border-zinc-800 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto p-6 relative shadow-2xl"><button onclick="closeAdminProductModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button><h3 class="font-sporty text-xl font-bold uppercase tracking-wider text-red-500 border-b border-zinc-850 pb-2 mb-4">Añadir Camiseta a Supabase</h3><form id="adminProductForm" onsubmit="saveProductToSupabase(event)" class="space-y-4 text-xs text-zinc-300"><div><label class="block text-zinc-400 font-bold mb-1">Nombre del Equipo</label><input type="text" id="formTeam" required placeholder="Ej: LDU Quito" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"></div><div><label class="block text-zinc-400 font-bold mb-1">Precio Unitario ($)</label><input type="number" step="0.01" id="formPrice" required placeholder="Ej: 25.00" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"></div><div><label class="block text-zinc-400 font-bold mb-1">Temporada</label><input type="text" id="formSeason" required placeholder="Ej: 2026 Local" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"></div><div><label class="block text-zinc-400 font-bold mb-1">Liga del Filtros Lateral</label><select id="formLiga" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"><option value="Ecuador">Ecuador</option><option value="Lunes">Lunes</option><option value="Selecciones">Selecciones</option></select></div><div><label class="block text-zinc-400 font-bold mb-1">Subcategoría del Menú Superior</label><select id="formSubcat" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"><option value="Liga Local">Ligas Nacionales</option><option value="Champions">UEFA Champions League</option><option value="Selecciones">Selecciones Nacionales</option><option value="Retro">Equipación Retro</option></select></div><div><label class="block text-zinc-400 font-bold mb-1 uppercase text-amber-500">URL IMAGEN 1 (FRENTE)</label><input type="url" id="formImageUrl1" required placeholder="https://ejemplo.com/imagen-frente.jpg" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"><p class="text-[9px] text-zinc-500 mt-1">📸 Sube tu imagen a ImgBB.com y pega el enlace "Direct Link"</p></div><div><label class="block text-zinc-400 font-bold mb-1 uppercase text-amber-500">URL IMAGEN 2 (ESPALDA)</label><input type="url" id="formImageUrl2" required placeholder="https://ejemplo.com/imagen-espalda.jpg" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"><p class="text-[9px] text-zinc-500 mt-1">📸 Sube tu imagen a ImgBB.com y pega el enlace "Direct Link"</p></div><div class="pt-2 flex gap-2"><button type="button" onclick="closeAdminProductModal()" class="w-1/2 bg-zinc-800 text-zinc-300 py-2.5 rounded uppercase font-bold">Cancelar</button><button type="submit" id="formSubmitBtn" class="w-1/2 bg-red-600 text-white py-2.5 rounded uppercase font-bold">Guardar en la Nube</button></div></form></div></div>
+    <div id="adminProductModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden"><div class="bg-zinc-900 border border-zinc-800 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto p-6"><button onclick="closeAdminProductModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button><h3 class="font-sporty text-xl font-bold uppercase tracking-wider text-red-500 border-b border-zinc-850 pb-2 mb-4">Añadir Camiseta a Supabase</h3><form id="adminProductForm" onsubmit="saveProductToSupabase(event)" class="space-y-4 text-xs text-zinc-300"><div><label class="block text-zinc-400 font-bold mb-1">Nombre del Equipo</label><input type="text" id="formTeam" required placeholder="Ej: LDU Quito" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"></div><div><label class="block text-zinc-400 font-bold mb-1">Precio Unitario ($)</label><input type="number" step="0.01" id="formPrice" required placeholder="Ej: 25.00" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"></div><div><label class="block text-zinc-400 font-bold mb-1">Temporada</label><input type="text" id="formSeason" required placeholder="Ej: 2026 Local" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"></div><div><label class="block text-zinc-400 font-bold mb-1">Liga del Filtros Lateral</label><select id="formLiga" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"><option value="Ecuador">Ecuador</option><option value="Ligas internacionales">Ligas internacionales</option><option value="Selecciones">Selecciones</option></select></div><div><label class="block text-zinc-400 font-bold mb-1">Subcategoría del Menú Superior</label><select id="formSubcat" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"><option value="Liga Local">Liga Nacional</option><option value="Champions">Equipos internacionales</option><option value="Selecciones">Selecciones Nacionales</option><option value="Retro">Equipación Retro</option></select></div><div><label class="block text-zinc-400 font-bold mb-1 uppercase text-amber-500">URL IMAGEN 1 (FRENTE)</label><input type="url" id="formImageUrl1" required placeholder="https://ejemplo.com/imagen-frente.jpg" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"><p class="text-[9px] text-zinc-500 mt-1">📸 Sube tu imagen a ImgBB.com y pega el enlace "Direct Link"</p></div><div><label class="block text-zinc-400 font-bold mb-1 uppercase text-amber-500">URL IMAGEN 2 (ESPALDA)</label><input type="url" id="formImageUrl2" required placeholder="https://ejemplo.com/imagen-espalda.jpg" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-white"><p class="text-[9px] text-zinc-500 mt-1">📸 Sube tu imagen a ImgBB.com y pega el enlace "Direct Link"</p></div><div class="pt-2 flex gap-2"><button type="button" onclick="closeAdminProductModal()" class="w-1/2 bg-zinc-800 text-zinc-300 py-2.5 rounded uppercase font-bold">Cancelar</button><button type="submit" id="formSubmitBtn" class="w-1/2 bg-red-600 text-white py-2.5 rounded uppercase font-bold">Guardar en la Nube</button></div></form></div></div>
  
     <a href="https://wa.me/593984276257" target="_blank" class="fixed bottom-6 left-6 bg-green-600 hover:bg-green-700 text-white h-14 w-14 rounded-full flex items-center justify-center text-2xl shadow-2xl transition-transform hover:scale-110 z-50"><i class="fa-brands fa-whatsapp"></i></a>
     <div id="alertToastBox" class="fixed bottom-6 right-6 bg-zinc-900 border-l-4 border-red-600 text-white px-5 py-3 rounded shadow-2xl opacity-0 pointer-events-none transition-opacity duration-300 z-50 text-xs font-bold"><span id="toastMessage"></span></div>
     <footer class="bg-zinc-950 border-t border-zinc-900 py-8 px-4 text-center text-xs text-zinc-500 mt-12"><p class="font-sporty font-bold tracking-wider text-zinc-400 mb-2">ZONA URBANA © 2026</p><p>Calidad Deportiva Premium y Personalización con Inteligencia Artificial.</p></footer>
  
     <script>
-        // ==========================================
-        // CONFIGURACIÓN CORRECTA DE SUPABASE
-        // ==========================================
         const SUPABASE_URL = "https://cmrsimmltraqfuhdibfw.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_BE8b_9-5IY2M7NJtIwHd9Q_Ysov15gs";
-        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        let productsList = [];
-        let shoppingCart = [];
-        let activeSubcategory = '';
-        let activeGlobalTalla = '';
-        let activeStampTalla = 'S';
-        let selectedProductForPersonalization = null;
-        let isAdminAuthenticated = false;
-        let currentZoomProductId = null;
-        let currentZoomView = 'front';
+        
+        let productsList = [], shoppingCart = [], activeSubcategory = '', activeGlobalTalla = '', activeStampTalla = 'M', selectedProductForPersonalization = null, isAdminAuthenticated = false;
+        let currentZoomProductId = null, currentZoomView = 'front';
+        let currentPreviewView = 'front';
  
         window.addEventListener('DOMContentLoaded', async () => { await fetchProductsFromSupabase(); });
  
@@ -193,10 +261,7 @@
                 document.getElementById('catalogGrid').classList.remove('hidden');
                 renderCatalog();
                 showToast("✅ Conectado a Supabase");
-            } catch (err) {
-                document.getElementById('dbLoader').innerHTML = `<p class="text-xs text-red-500 p-4">Error de conexión: ${err.message}</p>`;
-                showToast("❌ Error de conexión");
-            }
+            } catch (err) { document.getElementById('dbLoader').innerHTML = `<p class="text-xs text-red-500 p-4">Error: ${err.message}</p>`; showToast("❌ Error de conexión"); }
         }
  
         function openImageZoom(productId, view) {
@@ -208,8 +273,17 @@
             document.getElementById('imageZoomModal').style.display = 'flex';
         }
         function closeImageZoom() { document.getElementById('imageZoomModal').style.display = 'none'; currentZoomProductId = null; }
-        function switchToFront() { if (!currentZoomProductId) return; const product = productsList.find(p => p.id == currentZoomProductId); if (!product) return; currentZoomView = 'front'; document.getElementById('zoomImage').src = product.image_url_1; }
-        function switchToBack() { if (!currentZoomProductId) return; const product = productsList.find(p => p.id == currentZoomProductId); if (!product) return; currentZoomView = 'back'; document.getElementById('zoomImage').src = product.image_url_2 || product.image_url_1; }
+        function switchToFront() { if (!currentZoomProductId) return; const p = productsList.find(p => p.id == currentZoomProductId); if (!p) return; document.getElementById('zoomImage').src = p.image_url_1; }
+        function switchToBack() { if (!currentZoomProductId) return; const p = productsList.find(p => p.id == currentZoomProductId); if (!p) return; document.getElementById('zoomImage').src = p.image_url_2 || p.image_url_1; }
+ 
+        function switchPreview(view) {
+            if (!selectedProductForPersonalization) return;
+            currentPreviewView = view;
+            const imgUrl = view === 'front' ? selectedProductForPersonalization.image_url_1 : (selectedProductForPersonalization.image_url_2 || selectedProductForPersonalization.image_url_1);
+            document.getElementById('previewImage').src = imgUrl;
+            document.getElementById('previewFrontBtn').className = view === 'front' ? 'bg-red-600' : 'bg-zinc-700';
+            document.getElementById('previewBackBtn').className = view === 'back' ? 'bg-red-600' : 'bg-zinc-700';
+        }
  
         function renderCatalog() {
             const grid = document.getElementById('catalogGrid');
@@ -218,11 +292,23 @@
             const checkedLigas = Array.from(document.querySelectorAll('.liga-checkbox:checked')).map(cb => cb.value);
             let filtered = productsList;
             if (activeSubcategory) filtered = filtered.filter(p => p.subcategory === activeSubcategory);
-            if (checkedLigas.length > 0) filtered = filtered.filter(p => checkedLigas.includes(p.liga));
+            if (checkedLigas.length) filtered = filtered.filter(p => checkedLigas.includes(p.liga));
             if (searchVal) filtered = filtered.filter(p => p.team.toLowerCase().includes(searchVal));
-            if(filtered.length === 0) { grid.innerHTML = `<div class="col-span-2 text-center text-zinc-500 py-12 text-xs">Ninguna camiseta coincide con los filtros.</div>`; return; }
-            filtered.forEach(p => {
-                grid.innerHTML += `<div class="product-card bg-zinc-900 border border-zinc-800/60 p-4 rounded-lg flex flex-col justify-between transition-all duration-300 hover:border-red-600/50 group"><div class="relative w-full h-56 bg-zinc-950 rounded overflow-hidden mb-4 flex items-center justify-center"><img src="${p.image_url_1}" class="front-img absolute inset-0 w-full h-full object-contain p-2 transition-opacity duration-300 zoom-img" onclick="event.stopPropagation(); openImageZoom(${p.id}, 'front')"><img src="${p.image_url_2 || p.image_url_1}" class="back-img absolute inset-0 w-full h-full object-contain p-2 opacity-0 transition-opacity duration-300 zoom-img" onclick="event.stopPropagation(); openImageZoom(${p.id}, 'back')"></div><div><span class="text-[9px] bg-red-600/10 text-red-500 font-bold px-2 py-0.5 rounded-full uppercase border border-red-600/20">${p.liga}</span><h3 class="font-sporty font-bold text-base mt-2 text-white group-hover:text-red-500 transition-colors uppercase tracking-tight">${p.team}</h3><p class="text-[11px] text-zinc-500 mb-2">Temporada: ${p.season || '2026'}</p><div class="flex items-center justify-between mt-4"><span class="text-lg font-black text-white">$${parseFloat(p.price).toFixed(2)}</span><span class="text-[10px] text-red-500 font-bold uppercase tracking-wider bg-zinc-950 px-2 py-1 rounded group-hover:bg-red-600 group-hover:text-white transition-all cursor-pointer" onclick="selectProductForCustomization(${p.id})">Personalizar <i class="fa-solid fa-chevron-right text-[8px] ml-1"></i></span></div></div></div>`;
+            if (!filtered.length) { grid.innerHTML = '<div class="col-span-2 text-center text-zinc-500 py-12">No hay camisetas</div>'; return; }
+            filtered.forEach(p => { 
+                grid.innerHTML += `<div class="product-card bg-zinc-900 border border-zinc-800/60 p-4 rounded-lg cursor-pointer hover:border-red-600/50 group">
+                    <div class="relative w-full h-56 bg-zinc-950 rounded overflow-hidden mb-4">
+                        <img src="${p.image_url_1}" class="front-img absolute w-full h-full object-contain p-2 transition-opacity zoom-img" onclick="event.stopPropagation(); openImageZoom(${p.id}, 'front')">
+                        <img src="${p.image_url_2 || p.image_url_1}" class="back-img absolute w-full h-full object-contain p-2 opacity-0 transition-opacity zoom-img" onclick="event.stopPropagation(); openImageZoom(${p.id}, 'back')">
+                    </div>
+                    <span class="text-[9px] bg-red-600/10 text-red-500 px-2 py-0.5 rounded-full">${p.liga}</span>
+                    <h3 class="font-bold text-base mt-2 text-white uppercase">${p.team}</h3>
+                    <p class="text-[11px] text-zinc-500">${p.season || '2026'}</p>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-xl font-black text-white">$${parseFloat(p.price).toFixed(2)}</span>
+                        <button onclick="selectProductForCustomization(${p.id})" class="text-[10px] bg-red-600 text-white font-bold uppercase tracking-wider px-3 py-1.5 rounded hover:bg-red-700 transition">AGREGAR A CARRITO</button>
+                    </div>
+                </div>`; 
             });
         }
  
@@ -230,98 +316,203 @@
             const prod = productsList.find(p => p.id === id);
             if (!prod) return;
             selectedProductForPersonalization = prod;
-            document.getElementById('activeProductLabel').innerHTML = `<i class="fa-solid fa-circle-check"></i> Editando: Camiseta ${prod.team} - Talla: ${activeStampTalla}`;
-            document.getElementById('aiRecommendationBox').classList.add('hidden');
-            document.getElementById('aiGiftBox').classList.add('hidden');
-            showToast(`Camiseta seleccionada: ${prod.team}`);
-        }
- 
-        function filterBySubcategory(sub) { activeSubcategory = sub; renderCatalog(); }
-        function resetFilters() { activeSubcategory = ''; document.getElementById('catalogSearch').value = ''; document.querySelectorAll('.liga-checkbox').forEach(cb => cb.checked = true); renderCatalog(); }
- 
-        function setGlobalTalla(talla) {
-            document.querySelectorAll('.talla-btn').forEach(btn => btn.classList.remove('bg-red-600', 'text-white'));
-            if (activeGlobalTalla === talla) { activeGlobalTalla = ''; }
-            else { activeGlobalTalla = talla; document.getElementById(`gt-${talla}`).classList.add('bg-red-600', 'text-white'); }
-            showToast(`Filtro talla: ${activeGlobalTalla || 'Todas'}`);
+            document.getElementById('activeProductLabel').innerHTML = `<i class="fa-solid fa-circle-check"></i> Editando: ${prod.team} - Talla: ${activeStampTalla}`;
+            document.getElementById('previewContainer').classList.remove('hidden');
+            document.getElementById('previewImage').src = prod.image_url_1;
+            currentPreviewView = 'front';
+            document.getElementById('previewFrontBtn').className = 'bg-red-600';
+            document.getElementById('previewBackBtn').className = 'bg-zinc-700';
+            showToast(`Seleccionaste: ${prod.team}`);
         }
  
         function selectStampTalla(talla) {
             activeStampTalla = talla;
-            document.querySelectorAll('.st-btn').forEach(btn => btn.classList.remove('bg-red-600', 'text-white'));
-            document.getElementById(`st-${talla}`).classList.add('bg-red-600', 'text-white');
-            if (selectedProductForPersonalization) document.getElementById('activeProductLabel').innerHTML = `<i class="fa-solid fa-circle-check"></i> Editando: ${selectedProductForPersonalization.team} - Talla: ${activeStampTalla}`;
+            document.querySelectorAll('.st-btn').forEach(btn => {
+                btn.classList.remove('bg-red-600', 'text-white');
+                btn.classList.add('bg-zinc-800', 'text-zinc-300');
+            });
+            const selectedBtn = document.getElementById(`st-${talla}`);
+            if (selectedBtn) {
+                selectedBtn.classList.remove('bg-zinc-800', 'text-zinc-300');
+                selectedBtn.classList.add('bg-red-600', 'text-white');
+            }
+            if (selectedProductForPersonalization) {
+                document.getElementById('activeProductLabel').innerHTML = `<i class="fa-solid fa-circle-check"></i> Editando: ${selectedProductForPersonalization.team} - Talla: ${activeStampTalla}`;
+            }
+            showToast(`Talla seleccionada: ${talla}`);
         }
  
-        function toggleStampInputs() { const cb = document.getElementById('enableCustomStamping'); const fields = document.getElementById('stampingFieldsSection'); if (cb.checked) { fields.classList.remove('hidden'); } else { fields.classList.add('hidden'); } }
+        function filterBySubcategory(sub) { activeSubcategory = sub; renderCatalog(); }
+        function resetFilters() { activeSubcategory = ''; document.getElementById('catalogSearch').value = ''; document.querySelectorAll('.liga-checkbox').forEach(cb => cb.checked = true); renderCatalog(); }
+        function setGlobalTalla(talla) { activeGlobalTalla = talla; document.querySelectorAll('.talla-btn').forEach(btn => btn.classList.remove('bg-red-600', 'text-white')); document.getElementById(`gt-${talla}`).classList.add('bg-red-600', 'text-white'); showToast(`Filtro talla: ${talla}`); }
+        function toggleStampInputs() { const cb = document.getElementById('enableCustomStamping'); const fields = document.getElementById('stampingFieldsSection'); cb.checked ? fields.classList.remove('hidden') : fields.classList.add('hidden'); }
  
         function addToBagFromPersonalizer() {
             if (!selectedProductForPersonalization) { alert("Selecciona una camiseta primero"); return; }
-            const stampingEnabled = document.getElementById('enableCustomStamping').checked;
-            const patchesEnabled = document.getElementById('enablePatches').checked;
             let finalPrice = parseFloat(selectedProductForPersonalization.price);
-            let stampDetails = "Estándar";
-            if (stampingEnabled) {
+            let basePrice = finalPrice;
+            let stampingPrice = 0;
+            let patchesPrice = 0;
+            let stampDetails = "";
+            let nombrePersonalizado = "";
+            let numeroPersonalizado = "";
+            
+            if (document.getElementById('enableCustomStamping').checked) {
                 const name = document.getElementById('customSpineName').value.trim().toUpperCase();
                 const number = document.getElementById('customSpineNumber').value.trim();
                 if (!name || !number) { alert("Completa nombre y número"); return; }
-                finalPrice += 10.00;
+                stampingPrice = 10;
+                finalPrice += stampingPrice;
+                nombrePersonalizado = name;
+                numeroPersonalizado = number;
                 stampDetails = `Personalizado (${name} #${number})`;
             }
-            if (patchesEnabled) { finalPrice += 5.00; stampDetails += " + Parches Oficiales"; }
-            shoppingCart.push({ id_temp: Date.now(), team: selectedProductForPersonalization.team, season: selectedProductForPersonalization.season || '2026', talla: activeStampTalla, detalles: stampDetails, price: finalPrice });
+            if (document.getElementById('enablePatches').checked) {
+                patchesPrice = 5;
+                finalPrice += patchesPrice;
+                stampDetails += " + Parches Oficiales";
+            }
+            if (!stampDetails) stampDetails = "Estándar";
+            
+            const productImg = selectedProductForPersonalization.image_url_1;
+            shoppingCart.push({ 
+                id_temp: Date.now(), 
+                team: selectedProductForPersonalization.team, 
+                season: selectedProductForPersonalization.season || '2026', 
+                talla: activeStampTalla, 
+                detalles: stampDetails,
+                basePrice: basePrice,
+                stampingPrice: stampingPrice,
+                patchesPrice: patchesPrice,
+                nombre: nombrePersonalizado,
+                numero: numeroPersonalizado,
+                price: finalPrice, 
+                image: productImg 
+            });
             updateCartUI();
-            showToast("Agregado al Carrito");
+            showToast("Agregado al carrito");
         }
  
         function updateCartUI() {
             document.getElementById('cartCountBadge').innerText = shoppingCart.length;
             const list = document.getElementById('compactCartList');
-            const totalElement = document.getElementById('compactCartTotal');
-            if (shoppingCart.length === 0) { list.innerHTML = "El carrito está vacío."; totalElement.innerText = "$0.00"; return; }
+            const totalSpan = document.getElementById('compactCartTotal');
+            const cartImagesDiv = document.getElementById('cartItemsImages');
+            
+            if (!shoppingCart.length) { 
+                list.innerHTML = "El carrito está vacío."; 
+                totalSpan.innerText = "$0.00";
+                cartImagesDiv.innerHTML = '<div class="text-center text-zinc-500 text-xs py-2">No hay productos seleccionados</div>';
+                updateTotalWithDelivery();
+                return; 
+            }
+            
             let total = 0;
-            list.innerHTML = shoppingCart.map(item => { total += item.price; return `<div class="bg-zinc-950 p-2.5 rounded border border-zinc-850 flex justify-between"><div><p class="font-bold text-white text-[11px]">${item.team}</p><p class="text-[10px] text-zinc-500">Talla: ${item.talla} | ${item.detalles}</p></div><div class="text-right"><span class="text-red-500 font-bold">$${item.price.toFixed(2)}</span><button onclick="removeCartItem(${item.id_temp})" class="text-zinc-600 hover:text-red-500 block text-[10px]"><i class="fa-solid fa-trash-can"></i></button></div></div>`; }).join('');
-            totalElement.innerText = `$${total.toFixed(2)}`;
+            let imagesHtml = '<div class="space-y-3"><p class="text-[10px] text-zinc-400 font-bold mb-2">🛒 PRODUCTOS:</p>';
+            list.innerHTML = shoppingCart.map(item => { 
+                total += item.price;
+                let breakdownHtml = '';
+                if (item.stampingPrice > 0 || item.patchesPrice > 0) {
+                    breakdownHtml = `<div class="product-breakdown">
+                        Base: $${item.basePrice.toFixed(2)} 
+                        ${item.stampingPrice > 0 ? `+ Nombre/Número: $${item.stampingPrice.toFixed(2)}` : ''}
+                        ${item.patchesPrice > 0 ? `+ Parches: $${item.patchesPrice.toFixed(2)}` : ''}
+                    </div>`;
+                }
+                imagesHtml += `<div class="cart-item">
+                    <img src="${item.image}" class="cart-item-img">
+                    <div class="cart-item-details">
+                        <p class="font-bold text-white text-xs">${item.team}</p>
+                        <p class="text-[10px] text-zinc-500">Talla: ${item.talla} | ${item.detalles}</p>
+                        ${breakdownHtml}
+                        <p class="text-red-500 text-[11px] font-bold mt-1">$${item.price.toFixed(2)}</p>
+                    </div>
+                    <button onclick="removeCartItem(${item.id_temp})" class="text-red-500 text-xs ml-2"><i class="fa-solid fa-trash-can"></i></button>
+                </div>`;
+                return `<div class="bg-zinc-950 p-2.5 rounded border border-zinc-800">
+                    <div class="flex justify-between"><p class="font-bold text-white text-[11px]">${item.team}</p><span class="text-red-500 font-bold">$${item.price.toFixed(2)}</span></div>
+                    <p class="text-[10px] text-zinc-500">Talla: ${item.talla} | ${item.detalles}</p>
+                    <button onclick="removeCartItem(${item.id_temp})" class="text-zinc-600 hover:text-red-500 text-[10px] mt-1">Eliminar</button>
+                </div>`;
+            }).join('');
+            imagesHtml += '</div>';
+            cartImagesDiv.innerHTML = imagesHtml;
+            totalSpan.innerText = `$${total.toFixed(2)}`;
+            updateTotalWithDelivery();
         }
+        
+        function updateTotalWithDelivery() {
+            let subtotal = 0;
+            shoppingCart.forEach(item => { subtotal += item.price; });
+            const deliveryMethod = document.querySelector('input[name="deliveryMethod"]:checked');
+            const deliveryCost = (deliveryMethod && deliveryMethod.value === 'envio') ? 3.00 : 0;
+            document.getElementById('deliveryCost').innerText = `$${deliveryCost.toFixed(2)}`;
+            document.getElementById('totalWithDelivery').innerText = `$${(subtotal + deliveryCost).toFixed(2)}`;
+        }
+        
+        document.querySelectorAll('input[name="deliveryMethod"]').forEach(radio => {
+            radio.addEventListener('change', () => updateTotalWithDelivery());
+        });
  
         function removeCartItem(id) { shoppingCart = shoppingCart.filter(i => i.id_temp !== id); updateCartUI(); }
-        function clearShoppingBag() { shoppingCart = []; updateCartUI(); }
+        function clearShoppingBag() { shoppingCart = []; updateCartUI(); showToast("Carrito vaciado"); }
  
         function sendOrderWhatsApp() {
-            if (shoppingCart.length === 0) { alert("Carrito vacío"); return; }
+            if (!shoppingCart.length) { alert("Carrito vacío"); return; }
+            const nombre = document.getElementById('facturaNombre')?.value.trim() || '';
+            const cedula = document.getElementById('facturaCedula')?.value.trim() || '';
+            const celular = document.getElementById('facturaCelular')?.value.trim() || '';
+            const direccion = document.getElementById('facturaDireccion')?.value.trim() || '';
+            const deliveryMethod = document.querySelector('input[name="deliveryMethod"]:checked');
+            const deliveryText = deliveryMethod?.value === 'envio' ? '🚚 Envío a domicilio (+$3.00)' : '🏪 Retiro en tienda';
+            
             let msg = "*ZONA URBANA - NUEVO PEDIDO*\n=========================\n";
-            let total = 0;
-            shoppingCart.forEach((item, i) => { total += item.price; msg += `${i+1}. *${item.team}* (${item.season})\n   - Talla: ${item.talla}\n   - Config: ${item.detalles}\n   - Precio: $${item.price.toFixed(2)}\n\n`; });
-            msg += `=========================\n*Total a Pagar: $${total.toFixed(2)}*`;
+            msg += `👤 *DATOS DEL CLIENTE*\n`;
+            if (nombre) msg += `Nombre: ${nombre}\n`;
+            if (cedula) msg += `Cédula/RUC: ${cedula}\n`;
+            if (celular) msg += `Celular: ${celular}\n`;
+            if (direccion) msg += `Dirección: ${direccion}\n`;
+            msg += `Entrega: ${deliveryText}\n`;
+            msg += `=========================\n`;
+            
+            let subtotal = 0;
+            shoppingCart.forEach((item, i) => { 
+                subtotal += item.price;
+                msg += `${i+1}. *${item.team}* (${item.season})\n   - Talla: ${item.talla}\n   - Config: ${item.detalles}\n`;
+                if (item.basePrice) msg += `   - Base: $${item.basePrice.toFixed(2)}\n`;
+                if (item.stampingPrice) msg += `   - Personalización: $${item.stampingPrice.toFixed(2)}\n`;
+                if (item.patchesPrice) msg += `   - Parches: $${item.patchesPrice.toFixed(2)}\n`;
+                msg += `   - Precio total: $${item.price.toFixed(2)}\n\n`; 
+            });
+            const deliveryCost = (deliveryMethod?.value === 'envio') ? 3.00 : 0;
+            msg += `=========================\n📦 Subtotal productos: $${subtotal.toFixed(2)}\n🚚 Envío: $${deliveryCost.toFixed(2)}\n✨ *TOTAL A PAGAR: $${(subtotal + deliveryCost).toFixed(2)}*`;
+            
             window.open(`https://wa.me/593984276257?text=${encodeURIComponent(msg)}`, '_blank');
         }
  
         function getLegendaryPlayerRecommendation() {
             if (!selectedProductForPersonalization) { alert("Selecciona una camiseta"); return; }
             const team = selectedProductForPersonalization.team.toUpperCase();
-            const subcat = selectedProductForPersonalization.subcategory;
-            let recName = "MESSI", recNum = "10", reason = "Dorsal universal";
-            if (team.includes("REAL MADRID") || subcat === "Champions") { recName = "CR7"; recNum = "7"; reason = "Máximo goleador de la Champions"; }
-            else if (team.includes("BARCELONA")) { recName = "KMT"; recNum = "10"; reason = "Crack histórico"; }
-            else if (team.includes("LDU")) { recName = "MANSO"; recNum = "10"; reason = "Leyenda del club"; }
-            else if (subcat === "Retro") { recName = "MARADONA"; recNum = "10"; reason = "Dorsal retro"; }
-            window.lastAiRec = { name: recName, number: recNum };
+            let rec = { name: "MESSI", number: "10" };
+            if (team.includes("REAL MADRID")) rec = { name: "CR7", number: "7" };
+            else if (team.includes("BARCELONA")) rec = { name: "KMT", number: "10" };
+            else if (team.includes("LDU")) rec = { name: "MANSO", number: "10" };
+            window.lastRec = rec;
             document.getElementById('aiRecommendationBox').classList.remove('hidden');
-            document.getElementById('aiRecommendationText').innerHTML = `Para *${selectedProductForPersonalization.team}*, te sugiero estampar *${recName} #${recNum}*. ${reason}`;
+            document.getElementById('aiRecommendationText').innerHTML = `Para ${selectedProductForPersonalization.team}: ${rec.name} #${rec.number}`;
         }
+        function applyAIRecToStamping() { if (window.lastRec) { showToast(`Aplicado: ${window.lastRec.name} #${window.lastRec.number}`); } }
+        function generateGiftDedication() { const to = document.getElementById('aiGiftTo').value.trim(), team = document.getElementById('aiGiftTeam').value.trim(); if (!to || !team) { alert("Completa los campos"); return; } document.getElementById('aiGiftBox').classList.remove('hidden'); document.getElementById('aiGiftText').innerHTML = `¡Para ${to}! Fanático de ${team}. ¡Disfruta tu equipación Zona Urbana!`; }
  
-        function applyAIRecToStamping() { if (!window.lastAiRec) return; document.getElementById('enableCustomStamping').checked = true; toggleStampInputs(); document.getElementById('customSpineName').value = window.lastAiRec.name; document.getElementById('customSpineNumber').value = window.lastAiRec.number; showToast("Sugerencia aplicada"); }
-        function generateGiftDedication() { const target = document.getElementById('aiGiftTo').value.trim(); const favTeam = document.getElementById('aiGiftTeam').value.trim(); if (!target || !favTeam) { alert("Completa los campos"); return; } document.getElementById('aiGiftBox').classList.remove('hidden'); document.getElementById('aiGiftText').innerText = `¡Para ${target}! El fanático del ${favTeam}. Que lleves estos colores con orgullo. ¡Disfruta tu equipación premium de Zona Urbana!`; }
- 
-        function toggleAdminPanel() { if (isAdminAuthenticated) { const section = document.getElementById('adminPanelSection'); section.classList.toggle('hidden'); if (!section.classList.contains('hidden')) renderAdminTable(); } else { document.getElementById('adminPasswordModal').classList.remove('hidden'); } }
+        function toggleAdminPanel() { if (isAdminAuthenticated) { document.getElementById('adminPanelSection').classList.toggle('hidden'); if (!document.getElementById('adminPanelSection').classList.contains('hidden')) renderAdminTable(); } else { document.getElementById('adminPasswordModal').classList.remove('hidden'); } }
         function closeAdminPasswordModal() { document.getElementById('adminPasswordModal').classList.add('hidden'); document.getElementById('adminPasswordError').classList.add('hidden'); document.getElementById('adminPasswordInput').value = ''; }
-        function verifyAdminPassword() { const pass = document.getElementById('adminPasswordInput').value; if (pass === "3726") { isAdminAuthenticated = true; closeAdminPasswordModal(); document.getElementById('adminPanelSection').classList.remove('hidden'); renderAdminTable(); showToast("Acceso Concedido"); } else { document.getElementById('adminPasswordError').classList.remove('hidden'); } }
+        function verifyAdminPassword() { const pass = document.getElementById('adminPasswordInput').value; if (pass === "3726") { isAdminAuthenticated = true; closeAdminPasswordModal(); document.getElementById('adminPanelSection').classList.remove('hidden'); renderAdminTable(); showToast("Acceso concedido"); } else { document.getElementById('adminPasswordError').classList.remove('hidden'); } }
         function cerrarSesionAdmin() { isAdminAuthenticated = false; document.getElementById('adminPanelSection').classList.add('hidden'); showToast("Sesión cerrada"); }
  
         function renderAdminTable() {
             const tbody = document.getElementById('adminProductsTableBody');
-            tbody.innerHTML = '';
-            productsList.forEach(p => { tbody.innerHTML += `<tr class="border-b border-zinc-800"><td class="p-3"><img src="${p.image_url_1}" class="h-10 w-10 object-contain bg-zinc-950 rounded p-0.5"></td><td class="p-3 font-bold text-white">${p.team}</td><td class="p-3"><span class="bg-zinc-800 px-2 py-0.5 rounded">${p.liga}</span></td><td class="p-3 text-zinc-400">${p.season || '2026'}</td><td class="p-3 text-red-500 font-bold">$${parseFloat(p.price).toFixed(2)}</td><td class="p-3 text-right"><button onclick="deleteProductFromSupabase(${p.id})" class="text-red-500 hover:text-red-400"><i class="fa-solid fa-trash-can"></i></button></td></tr>`; });
+            if (!tbody) return;
+            tbody.innerHTML = productsList.map(p => `<tr class="border-b border-zinc-800"><td class="p-3"><img src="${p.image_url_1}" class="h-10 w-10 object-cover rounded"></td><td class="p-3 font-bold">${p.team}</td><td class="p-3">${p.liga}</td><td class="p-3">${p.season}</td><td class="p-3 text-red-500">$${parseFloat(p.price).toFixed(2)}</td><td class="p-3 text-right"><button onclick="deleteProduct(${p.id})" class="text-red-500"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('');
         }
  
         function showAddProductModal() { document.getElementById('adminProductModal').classList.remove('hidden'); }
@@ -333,35 +524,19 @@
             btn.disabled = true;
             btn.innerText = "Guardando...";
             try {
-                const imgUrl1 = document.getElementById('formImageUrl1').value.trim();
-                const imgUrl2 = document.getElementById('formImageUrl2').value.trim();
-                if (!imgUrl1 || !imgUrl2) throw new Error("Ingresa ambas URLs");
-                const { error } = await supabaseClient.from('camisetas').insert([{ team: document.getElementById('formTeam').value.trim(), price: parseFloat(document.getElementById('formPrice').value), season: document.getElementById('formSeason').value.trim(), liga: document.getElementById('formLiga').value, subcategory: document.getElementById('formSubcat').value, image_url_1: imgUrl1, image_url_2: imgUrl2 }]);
+                const nuevo = { team: document.getElementById('formTeam').value.trim(), price: parseFloat(document.getElementById('formPrice').value), season: document.getElementById('formSeason').value.trim(), liga: document.getElementById('formLiga').value, subcategory: document.getElementById('formSubcat').value, image_url_1: document.getElementById('formImageUrl1').value.trim(), image_url_2: document.getElementById('formImageUrl2').value.trim() };
+                const { error } = await supabaseClient.from('camisetas').insert([nuevo]);
                 if (error) throw error;
                 showToast("✅ Producto guardado");
                 closeAdminProductModal();
                 await fetchProductsFromSupabase();
                 if (isAdminAuthenticated) renderAdminTable();
                 document.getElementById('adminProductForm').reset();
-            } catch (err) { alert(`❌ Error: ${err.message}`); showToast(`Error: ${err.message}`); } finally { btn.disabled = false; btn.innerText = "Guardar en la Nube"; }
+            } catch (err) { alert("Error: " + err.message); } finally { btn.disabled = false; btn.innerText = "Guardar"; }
         }
  
-        async function deleteProductFromSupabase(id) {
-            if (!confirm("¿Eliminar esta camiseta?")) return;
-            const { error } = await supabaseClient.from('camisetas').delete().eq('id', id);
-            if (error) { alert("Error al eliminar"); return; }
-            showToast("Producto eliminado");
-            await fetchProductsFromSupabase();
-            renderAdminTable();
-        }
- 
-        function showToast(msg) {
-            const box = document.getElementById('alertToastBox');
-            document.getElementById('toastMessage').innerText = msg.toUpperCase();
-            box.classList.remove('opacity-0', 'pointer-events-none');
-            box.classList.add('opacity-100');
-            setTimeout(() => { box.classList.add('opacity-0', 'pointer-events-none'); }, 3000);
-        }
+        async function deleteProduct(id) { if (!confirm("¿Eliminar?")) return; const { error } = await supabaseClient.from('camisetas').delete().eq('id', id); if (error) { alert("Error"); return; } showToast("Producto eliminado"); await fetchProductsFromSupabase(); if (isAdminAuthenticated) renderAdminTable(); }
+        function showToast(msg) { const box = document.getElementById('alertToastBox'); document.getElementById('toastMessage').innerText = msg; box.classList.remove('opacity-0', 'pointer-events-none'); box.classList.add('opacity-100'); setTimeout(() => { box.classList.add('opacity-0', 'pointer-events-none'); }, 3000); }
         function scrollToCustomizer() { document.getElementById('personalizer-anchor').scrollIntoView({ behavior: 'smooth' }); }
     </script>
 </body>
