@@ -245,26 +245,90 @@
         // ✅ CREDENCIALES ACTUALIZADAS - zona-urbana-final
         const SUPABASE_URL = "https://cycjptbqrsxxvgdhjqvo.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_aMNQGGGWJg8IadJGm_8Frg_roWnYDdd";
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
+        const SUPABASE_SERVICE_KEY = "sb_secret_pc64vAXYlULcMn22Bxfs7A_Z_w6SY8V";
+
+        // 🔥 FUNCIÓN PARA CONSULTAR SUPABASE CON FETCH DIRECTO (SIN CORS)
+        async function fetchSupabase(table, query = '') {
+            try {
+                const url = `${SUPABASE_URL}/rest/v1/${table}?select=*${query}`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`
+                    }
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error en fetchSupabase:', error);
+                return null;
+            }
+        }
+
+        // 🔥 FUNCIÓN PARA INSERTAR EN SUPABASE CON FETCH DIRECTO
+        async function insertSupabase(table, data) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return { success: true };
+            } catch (error) {
+                console.error('Error en insertSupabase:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // 🔥 FUNCIÓN PARA ELIMINAR EN SUPABASE CON FETCH DIRECTO
+        async function deleteSupabase(table, id) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`
+                    }
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return { success: true };
+            } catch (error) {
+                console.error('Error en deleteSupabase:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
         let productsList = [], shoppingCart = [], activeSubcategory = '', activeGlobalTalla = '', activeStampTalla = 'M', selectedProductForPersonalization = null, isAdminAuthenticated = false;
         let currentZoomProductId = null, currentZoomView = 'front';
         let currentPreviewView = 'front';
- 
+
         window.addEventListener('DOMContentLoaded', async () => { await fetchProductsFromSupabase(); });
- 
+
         async function fetchProductsFromSupabase() {
             try {
-                const { data, error } = await supabaseClient.from('camisetas').select('*');
-                if (error) throw error;
+                const data = await fetchSupabase('camisetas');
+                if (!data) throw new Error('No se pudo obtener datos');
                 productsList = data || [];
                 document.getElementById('dbLoader').classList.add('hidden');
                 document.getElementById('catalogGrid').classList.remove('hidden');
                 renderCatalog();
                 showToast("✅ Conectado a Supabase");
-            } catch (err) { document.getElementById('dbLoader').innerHTML = `<p class="text-xs text-red-500 p-4">Error: ${err.message}</p>`; showToast("❌ Error de conexión"); }
+            } catch (err) {
+                console.error("Error detallado:", err);
+                document.getElementById('dbLoader').innerHTML = `<p class="text-xs text-red-500 p-4">Error: ${err.message}</p>`;
+                showToast("❌ Error de conexión");
+            }
         }
- 
+
         function openImageZoom(productId, view) {
             const product = productsList.find(p => p.id == productId);
             if (!product) return;
@@ -276,7 +340,7 @@
         function closeImageZoom() { document.getElementById('imageZoomModal').style.display = 'none'; currentZoomProductId = null; }
         function switchToFront() { if (!currentZoomProductId) return; const p = productsList.find(p => p.id == currentZoomProductId); if (!p) return; document.getElementById('zoomImage').src = p.image_url_1; }
         function switchToBack() { if (!currentZoomProductId) return; const p = productsList.find(p => p.id == currentZoomProductId); if (!p) return; document.getElementById('zoomImage').src = p.image_url_2 || p.image_url_1; }
- 
+
         function switchPreview(view) {
             if (!selectedProductForPersonalization) return;
             currentPreviewView = view;
@@ -285,7 +349,7 @@
             document.getElementById('previewFrontBtn').className = view === 'front' ? 'bg-red-600' : 'bg-zinc-700';
             document.getElementById('previewBackBtn').className = view === 'back' ? 'bg-red-600' : 'bg-zinc-700';
         }
- 
+
         function renderCatalog() {
             const grid = document.getElementById('catalogGrid');
             const searchVal = document.getElementById('catalogSearch').value.toLowerCase();
@@ -312,7 +376,7 @@
                 </div>`; 
             });
         }
- 
+
         function selectProductForCustomization(id) {
             const prod = productsList.find(p => p.id === id);
             if (!prod) return;
@@ -325,7 +389,7 @@
             document.getElementById('previewBackBtn').className = 'bg-zinc-700';
             showToast(`Seleccionaste: ${prod.team}`);
         }
- 
+
         function selectStampTalla(talla) {
             activeStampTalla = talla;
             document.querySelectorAll('.st-btn').forEach(btn => {
@@ -342,12 +406,12 @@
             }
             showToast(`Talla seleccionada: ${talla}`);
         }
- 
+
         function filterBySubcategory(sub) { activeSubcategory = sub; renderCatalog(); }
         function resetFilters() { activeSubcategory = ''; document.getElementById('catalogSearch').value = ''; document.querySelectorAll('.liga-checkbox').forEach(cb => cb.checked = true); renderCatalog(); }
         function setGlobalTalla(talla) { activeGlobalTalla = talla; document.querySelectorAll('.talla-btn').forEach(btn => btn.classList.remove('bg-red-600', 'text-white')); document.getElementById(`gt-${talla}`).classList.add('bg-red-600', 'text-white'); showToast(`Filtro talla: ${talla}`); }
         function toggleStampInputs() { const cb = document.getElementById('enableCustomStamping'); const fields = document.getElementById('stampingFieldsSection'); cb.checked ? fields.classList.remove('hidden') : fields.classList.add('hidden'); }
- 
+
         function addToBagFromPersonalizer() {
             if (!selectedProductForPersonalization) { alert("Selecciona una camiseta primero"); return; }
             let finalPrice = parseFloat(selectedProductForPersonalization.price);
@@ -393,7 +457,7 @@
             updateCartUI();
             showToast("Agregado al carrito");
         }
- 
+
         function updateCartUI() {
             document.getElementById('cartCountBadge').innerText = shoppingCart.length;
             const list = document.getElementById('compactCartList');
@@ -454,10 +518,10 @@
         document.querySelectorAll('input[name="deliveryMethod"]').forEach(radio => {
             radio.addEventListener('change', () => updateTotalWithDelivery());
         });
- 
+
         function removeCartItem(id) { shoppingCart = shoppingCart.filter(i => i.id_temp !== id); updateCartUI(); }
         function clearShoppingBag() { shoppingCart = []; updateCartUI(); showToast("Carrito vaciado"); }
- 
+
         function sendOrderWhatsApp() {
             if (!shoppingCart.length) { alert("Carrito vacío"); return; }
             const nombre = document.getElementById('facturaNombre')?.value.trim() || '';
@@ -490,7 +554,7 @@
             
             window.open(`https://wa.me/593984276257?text=${encodeURIComponent(msg)}`, '_blank');
         }
- 
+
         function getLegendaryPlayerRecommendation() {
             if (!selectedProductForPersonalization) { alert("Selecciona una camiseta"); return; }
             const team = selectedProductForPersonalization.team.toUpperCase();
@@ -504,21 +568,21 @@
         }
         function applyAIRecToStamping() { if (window.lastRec) { showToast(`Aplicado: ${window.lastRec.name} #${window.lastRec.number}`); } }
         function generateGiftDedication() { const to = document.getElementById('aiGiftTo').value.trim(), team = document.getElementById('aiGiftTeam').value.trim(); if (!to || !team) { alert("Completa los campos"); return; } document.getElementById('aiGiftBox').classList.remove('hidden'); document.getElementById('aiGiftText').innerHTML = `¡Para ${to}! Fanático de ${team}. ¡Disfruta tu equipación Zona Urbana!`; }
- 
+
         function toggleAdminPanel() { if (isAdminAuthenticated) { document.getElementById('adminPanelSection').classList.toggle('hidden'); if (!document.getElementById('adminPanelSection').classList.contains('hidden')) renderAdminTable(); } else { document.getElementById('adminPasswordModal').classList.remove('hidden'); } }
         function closeAdminPasswordModal() { document.getElementById('adminPasswordModal').classList.add('hidden'); document.getElementById('adminPasswordError').classList.add('hidden'); document.getElementById('adminPasswordInput').value = ''; }
         function verifyAdminPassword() { const pass = document.getElementById('adminPasswordInput').value; if (pass === "3726") { isAdminAuthenticated = true; closeAdminPasswordModal(); document.getElementById('adminPanelSection').classList.remove('hidden'); renderAdminTable(); showToast("Acceso concedido"); } else { document.getElementById('adminPasswordError').classList.remove('hidden'); } }
         function cerrarSesionAdmin() { isAdminAuthenticated = false; document.getElementById('adminPanelSection').classList.add('hidden'); showToast("Sesión cerrada"); }
- 
+
         function renderAdminTable() {
             const tbody = document.getElementById('adminProductsTableBody');
             if (!tbody) return;
             tbody.innerHTML = productsList.map(p => `<tr class="border-b border-zinc-800"><td class="p-3"><img src="${p.image_url_1}" class="h-10 w-10 object-cover rounded"></td><td class="p-3 font-bold">${p.team}</td><td class="p-3">${p.liga}</td><td class="p-3">${p.season}</td><td class="p-3 text-red-500">$${parseFloat(p.price).toFixed(2)}</td><td class="p-3 text-right"><button onclick="deleteProduct(${p.id})" class="text-red-500"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('');
         }
- 
+
         function showAddProductModal() { document.getElementById('adminProductModal').classList.remove('hidden'); }
         function closeAdminProductModal() { document.getElementById('adminProductModal').classList.add('hidden'); document.getElementById('adminProductForm').reset(); }
- 
+
         async function saveProductToSupabase(e) {
             e.preventDefault();
             const btn = document.getElementById('formSubmitBtn');
@@ -526,8 +590,8 @@
             btn.innerText = "Guardando...";
             try {
                 const nuevo = { team: document.getElementById('formTeam').value.trim(), price: parseFloat(document.getElementById('formPrice').value), season: document.getElementById('formSeason').value.trim(), liga: document.getElementById('formLiga').value, subcategory: document.getElementById('formSubcat').value, image_url_1: document.getElementById('formImageUrl1').value.trim(), image_url_2: document.getElementById('formImageUrl2').value.trim() };
-                const { error } = await supabaseClient.from('camisetas').insert([nuevo]);
-                if (error) throw error;
+                const result = await insertSupabase('camisetas', nuevo);
+                if (!result.success) throw new Error(result.error);
                 showToast("✅ Producto guardado");
                 closeAdminProductModal();
                 await fetchProductsFromSupabase();
@@ -535,8 +599,8 @@
                 document.getElementById('adminProductForm').reset();
             } catch (err) { alert("Error: " + err.message); } finally { btn.disabled = false; btn.innerText = "Guardar"; }
         }
- 
-        async function deleteProduct(id) { if (!confirm("¿Eliminar?")) return; const { error } = await supabaseClient.from('camisetas').delete().eq('id', id); if (error) { alert("Error"); return; } showToast("Producto eliminado"); await fetchProductsFromSupabase(); if (isAdminAuthenticated) renderAdminTable(); }
+
+        async function deleteProduct(id) { if (!confirm("¿Eliminar?")) return; const result = await deleteSupabase('camisetas', id); if (!result.success) { alert("Error: " + result.error); return; } showToast("Producto eliminado"); await fetchProductsFromSupabase(); if (isAdminAuthenticated) renderAdminTable(); }
         function showToast(msg) { const box = document.getElementById('alertToastBox'); document.getElementById('toastMessage').innerText = msg; box.classList.remove('opacity-0', 'pointer-events-none'); box.classList.add('opacity-100'); setTimeout(() => { box.classList.add('opacity-0', 'pointer-events-none'); }, 3000); }
         function scrollToCustomizer() { document.getElementById('personalizer-anchor').scrollIntoView({ behavior: 'smooth' }); }
     </script>
