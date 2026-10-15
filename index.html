@@ -357,7 +357,7 @@
             <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                 <i class="fas fa-images"></i>
                 <p>Haz clic aquí para seleccionar <strong>2 fotos</strong> por producto (JPG, PNG)</p>
-                <input type="file" id="fileInput" accept="image/*" multiple>
+                <input type="file" id="fileInput" multiple>
             </div>
             <button class="btn-upload" id="uploadBtn"><i class="fas fa-upload"></i> Subir Imágenes a la Nube</button>
 
@@ -950,7 +950,7 @@
         window.addPhotoToProduct = function(index) {
             const input = document.createElement('input');
             input.type = 'file';
-            input.accept = 'image/*';
+            // input.accept = 'image/*'; // <-- Desactivado para evitar problemas de carga
             input.onchange = async function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
