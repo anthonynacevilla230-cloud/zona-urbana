@@ -225,6 +225,7 @@
         .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 30px; margin-bottom: 40px; }
         .footer-col h4 { color: var(--text-white); margin-bottom: 20px; font-size: 0.9rem; text-transform: uppercase; }
         .footer-col ul { list-style: none; }
+        /* ESTILO CLAVE PARA QUE LOS ENLACES DEL FOOTER SE VEAN CLICABLES */
         .footer-col ul li { margin-bottom: 10px; font-size: 0.9rem; color: var(--text-gray); cursor: pointer; transition: color 0.2s; }
         .footer-col ul li:hover { color: var(--accent-yellow); }
         .footer-logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 1.2rem; margin-bottom: 15px; }
@@ -743,16 +744,19 @@
                 </div>
             </div>
             <div class="footer-col"><h4>CATEGORÍAS</h4><ul><li><a href="#">Gorras Snapback</a></li><li><a href="#">Gorras Trucker Malla</a></li><li><a href="#">Dad Hats & Curved</a></li><li><a href="#">Beanies & Gorros</a></li><li><a href="#" style="color: var(--accent-yellow);">Bordados 3D</a></li></ul></div>
+            
+            <!-- AQUI ESTA LA CORRECCIÓN DE LOS CLICS EN EL FOOTER -->
             <div class="footer-col">
                 <h4>ATENCIÓN AL CLIENTE</h4>
                 <ul>
                     <li onclick="openInfoModal('sizeModal')">Guía de Tallas</li>
                     <li onclick="openInfoModal('returnModal')">Políticas de Devolución y Cambios</li>
                     <li onclick="openInfoModal('wholesaleModal')">Ventas al Por Mayor</li>
-                    <li>Seguimiento de Envíos</li>
-                    <li>Preguntas Frecuentes</li>
+                    <li><a href="#">Seguimiento de Envíos</a></li>
+                    <li><a href="#">Preguntas Frecuentes</a></li>
                 </ul>
             </div>
+            
             <div class="footer-col">
                 <h4>TIENDA FÍSICA & CONTACTO</h4>
                 <ul>
