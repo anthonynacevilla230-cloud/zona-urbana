@@ -1184,14 +1184,23 @@
                     carouselHTML = `<button class="carousel-btn prev" onclick="changeImage(this, -1)"><i class="fas fa-chevron-left"></i></button><button class="carousel-btn next" onclick="changeImage(this, 1)"><i class="fas fa-chevron-right"></i></button>`;
                 }
                 
+                // ARREGLO DEL ZOOM: Pasamos el índice de la imagen en lugar de la URL fija
                 const imagesHTML = images.map((img, i) => {
-                    return `<img src="${img}" class="${i === 0 ? 'active' : ''}" alt="Gorra" onclick="openImageModal(this.src)">`;
+                    return `<img src="${img}" class="${i === 0 ? 'active' : ''}" alt="Gorra" onclick="openImageModalByIndex('${prod.id}', ${i})">`;
                 }).join('');
 
                 card.innerHTML = `<div class="product-img-container"><span class="tag">NUEVO</span>${imagesHTML}${carouselHTML}</div><div class="product-info"><div class="product-price"><div>$${prod.price || '29.99'}</div><button class="btn-add" onclick="addToCart('${prod.name || 'Modelo'}', ${prod.price || 29.99})"><i class="fas fa-shopping-cart"></i> Añadir</button></div><p style="color: var(--text-gray); font-size: 0.8rem; margin-top: 5px;">${prod.name || 'Modelo'}</p></div>`;
                 productGrid.appendChild(card);
             });
         }
+
+        // NUEVA FUNCIÓN PARA ABRIR EL ZOOM DE LA IMAGEN ACTIVA DEL CARRUSEL
+        window.openImageModalByIndex = function(productId, index) {
+            const product = allProducts.find(p => p.id === productId);
+            if (product && product.images && product.images[index]) {
+                openImageModal(product.images[index]);
+            }
+        };
 
         window.changeImage = function(btn, direction) {
             event.stopPropagation(); 
