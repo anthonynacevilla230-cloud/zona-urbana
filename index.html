@@ -745,13 +745,13 @@
             </div>
             <div class="footer-col"><h4>CATEGORÍAS</h4><ul><li><a href="#">Gorras Snapback</a></li><li><a href="#">Gorras Trucker Malla</a></li><li><a href="#">Dad Hats & Curved</a></li><li><a href="#">Beanies & Gorros</a></li><li><a href="#" style="color: var(--accent-yellow);">Bordados 3D</a></li></ul></div>
             
-            <!-- AQUI ESTA LA CORRECCIÓN DE LOS CLICS EN EL FOOTER -->
+            <!-- CORRECCIÓN EN EL FOOTER: event.stopPropagation() para evitar que salte al inicio -->
             <div class="footer-col">
                 <h4>ATENCIÓN AL CLIENTE</h4>
                 <ul>
-                    <li onclick="openInfoModal('sizeModal')">Guía de Tallas</li>
-                    <li onclick="openInfoModal('returnModal')">Políticas de Devolución y Cambios</li>
-                    <li onclick="openInfoModal('wholesaleModal')">Ventas al Por Mayor</li>
+                    <li onclick="event.stopPropagation(); openInfoModal('sizeModal')">Guía de Tallas</li>
+                    <li onclick="event.stopPropagation(); openInfoModal('returnModal')">Políticas de Devolución y Cambios</li>
+                    <li onclick="event.stopPropagation(); openInfoModal('wholesaleModal')">Ventas al Por Mayor</li>
                     <li><a href="#">Seguimiento de Envíos</a></li>
                     <li><a href="#">Preguntas Frecuentes</a></li>
                 </ul>
@@ -1184,7 +1184,7 @@
                     carouselHTML = `<button class="carousel-btn prev" onclick="changeImage(this, -1)"><i class="fas fa-chevron-left"></i></button><button class="carousel-btn next" onclick="changeImage(this, 1)"><i class="fas fa-chevron-right"></i></button>`;
                 }
                 
-                // ARREGLO DEL ZOOM: Pasamos el índice de la imagen en lugar de la URL fija
+                // CORRECCIÓN DEL ZOOM: Pasamos el índice de la imagen al hacer clic
                 const imagesHTML = images.map((img, i) => {
                     return `<img src="${img}" class="${i === 0 ? 'active' : ''}" alt="Gorra" onclick="openImageModalByIndex('${prod.id}', ${i})">`;
                 }).join('');
